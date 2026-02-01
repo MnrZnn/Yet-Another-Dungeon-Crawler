@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yet another Dungeon Crawler</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="crt-overlay"></div>
+    <div class="game-container">
+        <div class="game-title">YET ANOTHER DUNGEON CRAWLER</div>
+        
+        <div class="main-game">
+            <!-- Left Panel - Party Table -->
+            <div class="left-panel">
+                <div class="panel-title">PARTY</div>
+                <div class="party-members" id="partyMembers">
+                    <!-- Party members will be generated here -->
+                </div>
+            </div>
+
+            <!-- Center - Game View and Text Field -->
+            <div class="center-panel">
+                <!-- 3D Maze View (Raycaster) -->
+                <div class="maze-view">
+                    <canvas id="mazeCanvas"></canvas>
+                    <img id="enemySpriteOverlay" class="enemy-sprite-overlay" src="" alt="Enemy">
+                </div>
+
+                <!-- Text Field / Combat -->
+                <div class="text-field" id="textField">
+                    <div class="text-content" id="textContent">
+                        > Welcome to Yet another Dungeon Crawler!<br>
+                        > Choose your party to begin...
+                    </div>
+                    <div class="combat-menu" id="combatMenu" style="display: none;">
+                        <button class="combat-btn" data-action="attack">ATTACK</button>
+                        <button class="combat-btn" data-action="magic">MAGIC</button>
+                        <button class="combat-btn" data-action="item">ITEM</button>
+                        <button class="combat-btn" data-action="flee">FLEE</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Inventory and Stats -->
+            <div class="right-panel">
+                <!-- Inventory -->
+                <div class="inventory-section">
+                    <div class="panel-title">INVENTORY</div>
+                    <div class="inventory-grid" id="inventoryGrid">
+                        <!-- 16 inventory slots -->
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-section">
+                    <div class="panel-title">STATUS</div>
+                    <div class="stats-content" id="statsContent">
+                        <div class="stat-line">FLOOR: <span id="floorLevel">1</span></div>
+                        <div class="stat-line">KEYS: <span id="keyCount">0</span>/3</div>
+                        <div class="stat-line">LEVEL: <span id="partyLevel">1</span></div>
+                        <div class="stat-line">XP: <span id="xpCount">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Minimap -->
+                <div class="minimap-section">
+                    <canvas id="minimapCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Selection Screen -->
+    <div class="char-select-screen" id="charSelectScreen">
+        <div class="char-select-content">
+            <h1 class="select-title">CHOOSE YOUR PARTY</h1>
+            <div class="char-selection-grid" id="charSelectionGrid">
+                <!-- Character options will be generated here -->
+            </div>
+            <button class="start-btn" id="startGameBtn" disabled>START ADVENTURE</button>
+        </div>
+    </div>
+
+    <!-- Equipment Modal -->
+    <div class="equipment-modal" id="equipmentModal">
+        <div class="equipment-content">
+            <div class="equipment-title">EQUIP ITEM</div>
+            <div class="equipment-members" id="equipmentMembers">
+                <!-- Members will be listed here -->
+            </div>
+            <div class="equipment-buttons">
+                <button class="equipment-btn" id="cancelEquipBtn">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Name Input Modal -->
+    <div class="name-input-modal" id="nameInputModal">
+        <div class="name-input-content">
+            <div class="name-input-title">HERO NAME</div>
+            <input type="text" id="heroNameInput" class="name-input-field" placeholder="Enter your name" maxlength="12">
+            <button class="start-btn" id="confirmNameBtn">CONFIRM</button>
+        </div>
+    </div>
+
+    <!-- Credits Footer -->
+    <div class="credits-footer">
+        Original sprites from <a href="https://opengameart.org/content/dungeon-crawl-32x32-tiles" target="_blank">Dungeon Crawl Stone Soup</a> | This is a non-profit fan project
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

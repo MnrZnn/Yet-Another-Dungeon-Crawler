@@ -1,0 +1,686 @@
+@font-face {
+    font-family: 'NES';
+    src: url('nes-8bit.otf') format('opentype');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-bg: #0a0a0a;
+    --secondary-bg: #1a0a0a;
+    --border-color: #8a0a0a;
+    --text-color: #cc3333;
+    --highlight-color: #ff4444;
+    --danger-color: #aa0000;
+    --panel-bg: #000000;
+    --dark-red: #660000;
+    --blood-red: #990000;
+}
+
+body {
+    font-family: 'NES', 'Courier New', monospace;
+    background: var(--primary-bg);
+    color: var(--text-color);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* CRT Effect */
+.crt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.15),
+            rgba(0, 0, 0, 0.15) 1px,
+            transparent 1px,
+            transparent 2px
+        );
+    animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+    0% { opacity: 0.98; }
+    50% { opacity: 1; }
+    100% { opacity: 0.97; }
+}
+
+/* Game Container */
+.game-container {
+    width: 76vw;
+    max-width: 1080px;
+    height: 74vh;
+    max-height: 765px;
+    background: var(--panel-bg);
+    border: 4px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 9px;
+    margin-bottom: 27px;
+}
+
+/* Game Title */
+.game-title {
+    font-size: 18px;
+    letter-spacing: 3px;
+    text-align: center;
+    padding: 7px;
+    border: 2px solid var(--border-color);
+    background: var(--secondary-bg);
+    animation: pulse 2s infinite;
+    color: var(--highlight-color);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Main Game Layout */
+.main-game {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 162px 1fr 162px;
+    gap: 7px;
+    margin-top: 7px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.panel-title {
+    padding: 6px;
+    background: var(--secondary-bg);
+    border: 2px solid var(--border-color);
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 6px;
+    letter-spacing: 2px;
+}
+
+/* LEFT PANEL - Party */
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid var(--border-color);
+    padding: 8px;
+    background: var(--panel-bg);
+    overflow-y: auto;
+}
+
+.party-members {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.party-member {
+    border: 2px solid var(--dark-red);
+    padding: 6px;
+    margin-bottom: 6px;
+    background: var(--secondary-bg);
+    font-size: 9px;
+    display: flex;
+    gap: 6px;
+}
+
+.member-sprite-container {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+.member-sprite-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
+}
+
+.member-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.member-name {
+    font-size: 11px;
+    margin-bottom: 3px;
+    color: var(--highlight-color);
+}
+
+.member-class {
+    font-size: 8px;
+    margin-bottom: 3px;
+    opacity: 0.8;
+}
+
+.member-health {
+    display: flex;
+    justify-content: space-between;
+    margin: 3px 0;
+    font-size: 8px;
+}
+
+.health-bar {
+    width: 100%;
+    height: 6px;
+    background: #330000;
+    border: 1px solid var(--border-color);
+    margin: 2px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #aa0000, #ff3333);
+    transition: width 0.3s;
+}
+
+.member-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    font-size: 8px;
+    margin-top: 3px;
+}
+
+/* CENTER PANEL - Maze and Text */
+.center-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Maze View */
+.maze-view {
+    flex: 0 0 auto;
+    height: 324px;
+    border: 3px solid var(--border-color);
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Enemy sprite */
+.enemy-sprite-overlay {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 126px;
+    height: 126px;
+    image-rendering: pixelated;
+    z-index: 10;
+    display: none;
+    animation: enemyAppear 0.5s ease-out;
+    background: #000;
+    border: 3px solid var(--border-color);
+    padding: 5px;
+}
+
+.enemy-sprite-overlay.active {
+    display: block;
+}
+
+@keyframes enemyAppear {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+
+#mazeCanvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* Text Field / Combat */
+.text-field {
+    flex: 1;
+    border: 2px solid var(--border-color);
+    background: var(--panel-bg);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    font-size: 10px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.text-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    line-height: 1.5;
+    font-size: 10px;
+    padding: 6px;
+    padding-right: 12px;
+    min-height: 0;
+    max-height: 100%;
+    word-wrap: break-word;
+    border: 1px solid var(--dark-red);
+    background: rgba(10, 0, 0, 0.7);
+    margin-bottom: 10px;
+}
+
+.combat-menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.combat-btn {
+    padding: 2px;
+    background: var(--secondary-bg);
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    font-family: 'NES', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.combat-btn:hover {
+    background: var(--dark-red);
+    color: var(--highlight-color);
+    transform: scale(1.05);
+}
+
+.combat-btn:active {
+    transform: scale(0.95);
+}
+
+/* RIGHT PANEL */
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Inventory */
+.inventory-section {
+    flex: 0 0 auto;
+    border: 2px solid var(--border-color);
+    padding: 8px;
+    background: var(--panel-bg);
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+}
+
+.inventory-slot {
+    aspect-ratio: 1;
+    border: 2px solid var(--dark-red);
+    background: var(--secondary-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.inventory-slot:hover {
+    background: var(--dark-red);
+    transform: scale(1.1);
+}
+
+.inventory-slot img {
+    width: 80%;
+    height: 80%;
+    image-rendering: pixelated;
+}
+
+/* Stats */
+.stats-section {
+    flex: 0 0 auto;
+    border: 2px solid var(--border-color);
+    padding: 8px;
+    background: var(--panel-bg);
+}
+
+.stats-content {
+    font-size: 10px;
+}
+
+.stat-line {
+    margin: 4px 0;
+}
+
+.stat-line span {
+    color: var(--highlight-color);
+}
+
+/* Minimap */
+.minimap-section {
+    flex: 1;
+    border: 2px solid var(--border-color);
+    padding: 4px;
+    background: var(--panel-bg);
+    min-height: 0;
+    overflow: hidden;
+}
+
+#minimapCanvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+}
+
+/* CHARACTER SELECTION SCREEN */
+.char-select-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.char-select-content {
+    width: 90%;
+    max-width: 800px;
+    padding: 30px;
+    background: var(--panel-bg);
+    border: 4px solid var(--border-color);
+}
+
+.select-title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    letter-spacing: 4px;
+    color: var(--highlight-color);
+}
+
+.char-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.char-option {
+    border: 2px solid var(--dark-red);
+    padding: 12px;
+    background: var(--secondary-bg);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.char-option:hover {
+    transform: scale(1.05);
+    border-color: var(--border-color);
+}
+
+.char-option.selected {
+    border-color: var(--highlight-color);
+    background: rgba(170, 0, 0, 0.2);
+}
+
+.char-option img {
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+    margin-bottom: 8px;
+}
+
+.char-option-name {
+    font-size: 10px;
+    margin-top: 6px;
+}
+
+.start-btn {
+    width: 100%;
+    padding: 15px;
+    font-family: 'NES', monospace;
+    font-size: 14px;
+    background: var(--secondary-bg);
+    border: 3px solid var(--border-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 3px;
+}
+
+.start-btn:not(:disabled):hover {
+    background: var(--dark-red);
+    color: var(--highlight-color);
+}
+
+.start-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--panel-bg);
+    border: 1px solid var(--dark-red);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dark-red);
+    border: 1px solid var(--panel-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 810px) {
+    .main-game {
+        grid-template-columns: 135px 1fr 135px;
+    }
+    
+    .char-selection-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Equipment Modal */
+.equipment-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.equipment-modal.active {
+    display: flex;
+}
+
+.equipment-content {
+    background: var(--panel-bg);
+    border: 3px solid var(--border-color);
+    padding: 20px;
+    max-width: 400px;
+}
+
+.equipment-title {
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    color: var(--highlight-color);
+}
+
+.equipment-members {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.equipment-member-option {
+    border: 2px solid var(--dark-red);
+    padding: 10px;
+    background: var(--secondary-bg);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.equipment-member-option:hover {
+    background: var(--dark-red);
+    color: var(--highlight-color);
+}
+
+.equipment-member-sprite {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+}
+
+.equipment-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.equipment-btn {
+    flex: 1;
+    padding: 10px;
+    background: var(--secondary-bg);
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    font-family: 'NES', monospace;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.equipment-btn:hover {
+    background: var(--dark-red);
+    color: var(--highlight-color);
+}
+
+/* Name Input Modal */
+.name-input-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+
+.name-input-content {
+    background: var(--panel-bg);
+    border: 3px solid var(--border-color);
+    padding: 30px;
+    max-width: 400px;
+}
+
+.name-input-title {
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    color: var(--highlight-color);
+}
+
+.name-input-field {
+    width: 100%;
+    padding: 10px;
+    background: var(--secondary-bg);
+    border: 2px solid var(--border-color);
+    color: var(--text-color);
+    font-family: 'NES', monospace;
+    font-size: 12px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.name-input-field:focus {
+    outline: none;
+    border-color: var(--highlight-color);
+}
+
+.inventory-slot.equipable {
+    cursor: pointer;
+}
+
+.inventory-slot.equipable:hover {
+    border-color: var(--highlight-color);
+}
+
+/* Footer Credits */
+.credits-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    border-top: 2px solid var(--dark-red);
+    padding: 8px;
+    text-align: center;
+    font-size: 9px;
+    color: var(--text-color);
+    z-index: 10000;
+}
+
+.credits-footer a {
+    color: var(--highlight-color);
+    text-decoration: none;
+}
+
+.credits-footer a:hover {
+    text-decoration: underline;
+}
